@@ -1,7 +1,7 @@
 <?php
 
 namespace MareaTurbo;
-use
+
 class HttpMethod
 {
 
