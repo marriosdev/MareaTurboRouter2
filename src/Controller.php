@@ -38,6 +38,10 @@ class Controller
 
     private function recursiveDependenciesBuild(ReflectionClass $reflectionControllerInstance) : mixed
     {
+        if($reflectionControllerInstance->getConstructor() == null) {
+            return $reflectionControllerInstance->newInstance();
+        }
+        
         $dependencies = $reflectionControllerInstance->getConstructor()->getParameters();
         if($dependencies == null) {
             return $reflectionControllerInstance->newInstance();
