@@ -1,3 +1,4 @@
 /vendor
 .htaccess
 index.php
+composer.lock
