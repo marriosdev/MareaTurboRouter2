@@ -21,7 +21,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "pestphp/pest": "^2.23"
+        "pestphp/pest": "^2.23",
+        "mockery/mockery": "^1.6"
     },
     "config": {
         "allow-plugins": {
