@@ -49,8 +49,8 @@ class Controller
 
         $arguments = array();
         foreach($dependencies as $dependency){
-            $depencyClassName = $dependency->getType()->getName();
-            $dependencyReflectionClass = new ReflectionClass($depencyClassName);
+            $dependencyClassName = $dependency->getType()->getName();
+            $dependencyReflectionClass = new ReflectionClass($dependencyClassName);
             $arguments[] = $this->recursiveDependenciesBuild($dependencyReflectionClass);
         }
         return $reflectionControllerInstance->newInstanceArgs($arguments);
