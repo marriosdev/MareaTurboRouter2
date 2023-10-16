@@ -50,34 +50,3 @@ class Router
         return  new Route($route, $method);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// public function route()
-// {
-//     $reflection = new ReflectionClass(RouteTeste::class);
-//     foreach($reflection->getMethods() as $method) {
-//         foreach($method->getAttributes() as $attribute) {
-//             $attribute->newInstance();
-//             if($attribute->newInstance()->path == "/teste2") {
-//             var_dump($method->invoke(new ($reflection->getName())));
-//             }
-//         }
-//     }
-// }
