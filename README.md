@@ -51,3 +51,11 @@ class ControllerTeste
 In your browser, access the URL: http://localhost/teste/123
 <br>
 And you will see the result: 123
+
+<br>
+
+You can run this route in CLI mode
+
+```shell
+php .\index.php /teste/123
+```
