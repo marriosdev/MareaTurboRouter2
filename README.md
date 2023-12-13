@@ -2,6 +2,22 @@
 #### PHP Version 8.1^
 <img src="mareaGif/marea.gif" alt="VRUMMMMMMMMMMMMMMMM" width="50%"/>
 
+<p align="center">
+    <a href="https://packagist.org/packages/marrios/router"><img src="https://img.shields.io/packagist/dt/marrios/mareaturborouter" alt="Total Downloads"</a>
+    <a href="https://packagist.org/packages/marrios/router"><img src="https://img.shields.io/packagist/v/marrios/mareaturborouter" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/marrios/router"><img src="https://img.shields.io/packagist/l/marrios/mareaturborouter" alt="License"></a>
+</p>
+
+@marriosdev
+
+<br>
+
+# Starting
+
+```php
+composer require marrios/mareaturborouter
+```
+
 ### Copy
 ```php
 
