@@ -57,5 +57,5 @@ And you will see the result: 123
 You can run this route in CLI mode
 
 ```shell
-php .\index.php /teste/123
+php .\index.php GET /teste/123
 ```

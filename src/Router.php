@@ -14,9 +14,10 @@ class Router
     {
         $this->controllers = $controllers;
         $this->run();
+        return $this;
     }
 
-    public function run()
+    private function run()
     {
         $acessedRoute = $this->getAccessedRoute();
         
@@ -35,17 +36,17 @@ class Router
             }
         }
     }
-
-    public function isCli()
+    
+    private function isCli()
     {
         return php_sapi_name() === 'cli';
     }
 
-    public function getAccessedRoute()
+    private function getAccessedRoute()
     {
         global $argv;
-        $route = $this->isCli() ? $argv[1] : $_SERVER['REQUEST_URI'];
-        $method = $this->isCli() ? "GET" : $_SERVER['REQUEST_METHOD'];
+        $route = $this->isCli() ? $argv[2] : explode("?", $_SERVER['REQUEST_URI'])[0];
+        $method = $this->isCli() ? $argv[1] : explode("?", $_SERVER['REQUEST_METHOD'])[0];
 
         return  new Route($route, $method);
     }
