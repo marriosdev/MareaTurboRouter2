@@ -1,10 +1,10 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace MareaTurbo;
 
 use MareaTurbo\Controller;
 use ReflectionClass;
+use ReflectionMethod;
 
 class Router
 {
@@ -30,23 +30,39 @@ class Router
     
     private function run()
     {
-        $acessedRoute = $this->getAccessedRoute();
         foreach($this->controllers as $controller) {
             $reflectionController = new ReflectionClass($controller);
-            foreach($reflectionController->getMethods() as $method) {
-                foreach($method->getAttributes() as $route) {
-                    $routeInstance = $route->newInstance();
-                    if($routeInstance->isMatch($acessedRoute)) {
-                        return (new Controller($controller))->runMethod(
-                            $method->getName(), 
-                            $routeInstance->getDynamicParameters($acessedRoute)
-                        );
-                    }
+            foreach($reflectionController->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                $this->getRouteAttribute($method, $controller);
+            }
+        }
+
+        http_response_code(404);
+        echo "Route not found";
+    }
+    
+    private function getRouteAttribute($method, $controller)
+    {
+        if($method->getAttributes()) {
+            foreach($method->getAttributes() as $route) {
+                $routeInstance = $route->newInstance();
+                if($routeInstance->isMatch($this->getAccessedRoute())) {
+                    return $this->invokeController($method, $controller, $routeInstance);
                 }
             }
         }
     }
-    
+
+    private function invokeController($method, $controller, $routeInstance)
+    {
+        (new Controller($controller))->runMethod(
+            $method->getName(), 
+            $routeInstance->getDynamicParameters($this->getAccessedRoute())
+        );
+
+        $this->endLifeCycle();
+    }
+
     private function isCli()
     {
         return php_sapi_name() === 'cli';
@@ -60,17 +76,8 @@ class Router
         return  new Route($route, $method);
     }
 
-    // private function attributeMatch($attributeRoute, $accessedRoute) : Mixed
-    // {
-    //     $routeInstance = $route->newInstance();
-        
-    //     if($routeInstance->isMatch($acessedRoute)) {
-    //         return (new Controller($controller))->runMethod(
-    //             $method->getName(), 
-    //             $routeInstance->getDynamicParameters($acessedRoute)
-    //         );
-    //     }
-
-    //     return true;
-    // }
+    private function endLifeCycle()
+    {
+        exit;
+    }
 }

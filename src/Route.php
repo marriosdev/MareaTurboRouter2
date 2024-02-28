@@ -19,8 +19,8 @@ class Route
 
     public function isMatch(Route $route) : bool
     {
-        $currentRoute = explode('/', $this->path);
-        $accessedRoute = explode('/', $route->path);
+        $currentRoute = $this->routeStringToArray($this->path);
+        $accessedRoute = $this->routeStringToArray($route->path);
         
         if($route->method->name != $this->method->name) {
             return false;
@@ -43,8 +43,9 @@ class Route
 
     public function getDynamicParameters(Route $acessedRoute) : RouteParameters
     {
-        $currentRoute = explode('/', $this->path);
-        $accessedRoute = explode('/', $acessedRoute->path);
+        $currentRoute  = $this->routeStringToArray($this->path);
+        $accessedRoute = $this->routeStringToArray($acessedRoute->path);
+
         $parameters = new RouteParameters();
         
         for($i=0; $i < count($accessedRoute); $i++) {
@@ -54,7 +55,14 @@ class Route
                 }
             }
         }
-        
         return $parameters;
+    }
+
+    public function routeStringToArray(string $string) : array
+    {
+        if(substr($string, -1) == "/") {
+            $string = substr($string, 0, -1);
+        }
+        return explode('/', $string);
     }
 }
