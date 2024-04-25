@@ -34,8 +34,7 @@ class ControllerTeste
     public function __construct()
     {}
 
-
-    #[Route("/teste/{id}", "GET")]
+    #[Route("/teste/{id}", "GET", "route.name")]
     public function teste($parameters)
     {
         echo $parameters->id;
