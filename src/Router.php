@@ -1,8 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace MareaTurbo;
 
-use MareaTurbo\Controller;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -23,43 +24,43 @@ class Router
         $middlewareInstance = $reflectionClass->newInstance();
         if (!$middlewareInstance->handle()) {
             http_response_code($httpStatusCode);
-            exit;    
+            exit;
         }
         return $this;
     }
-    
-    private function run()
+
+    /**
+     * 
+     */
+    private function run(): void
     {
-        foreach($this->controllers as $controller) {
+        foreach ($this->controllers as $controller) {
             $reflectionController = new ReflectionClass($controller);
-            foreach($reflectionController->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($reflectionController->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 $this->getRouteAttribute($method, $controller);
             }
         }
-
         http_response_code(404);
-        echo "Route not found";
     }
-    
+
     private function getRouteAttribute($method, $controller)
     {
-        if($method->getAttributes()) {
-            foreach($method->getAttributes() as $route) {
+        if ($method->getAttributes()) {
+            foreach ($method->getAttributes() as $route) {
                 $routeInstance = $route->newInstance();
-                if($routeInstance->isMatch($this->getAccessedRoute())) {
+                if ($routeInstance->isMatch($this->getAccessedRoute())) {
                     return $this->invokeController($method, $controller, $routeInstance);
                 }
             }
         }
     }
 
-    private function invokeController($method, $controller, $routeInstance)
+    private function invokeController($method, $controller, $route)
     {
-        (new Controller($controller))->runMethod(
-            $method->getName(), 
-            $routeInstance->getDynamicParameters($this->getAccessedRoute())
+        (new \MareaTurbo\Controller($controller))->runMethod(
+            $method->getName(),
+            (new \MareaTurbo\Request($route))
         );
-
         $this->endLifeCycle();
     }
 
@@ -73,7 +74,13 @@ class Router
         global $argv;
         $route = $this->isCli() ? $argv[2] : explode("?", $_SERVER['REQUEST_URI'])[0];
         $method = $this->isCli() ? $argv[1] : explode("?", $_SERVER['REQUEST_METHOD'])[0];
-        return  new Route($route, $method);
+        return new Route($route, $method);
+    }
+
+    private function getUri(): string
+    {
+        global $argv;
+        return $this->isCli() ? $argv[2] : explode("?", $_SERVER['REQUEST_URI'])[0];
     }
 
     private function endLifeCycle()
