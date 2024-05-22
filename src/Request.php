@@ -22,7 +22,7 @@ class Request
      */
     public function all()
     {
-        return get_object_vars($this);
+        return $this->route->getInputBag();
     }
 
     /**
@@ -30,8 +30,13 @@ class Request
      */
     public function only(array $keys = [])
     {
-        return array_filter($keys, function ($key) {
-            return $this->$key;
-        });
+        $inputBag = $this->route->getInputBag();
+        $filtered = [];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $inputBag)) {
+                $filtered[$key] = $inputBag[$key];
+            }
+        }
+        return $filtered;
     }
 }

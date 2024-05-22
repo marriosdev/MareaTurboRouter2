@@ -13,6 +13,7 @@ class Route
     public String $path;
     public HttpMethod $method;
     public string $name;
+    protected array $inputBag;
 
     /**
      * 
@@ -45,6 +46,7 @@ class Route
                 if (substr($value, 0, 1) != "{" || substr($value, -1) != "}") {
                     return false;
                 }
+                $this->inputBag[substr($value, 1, -1)] = $accessedRoute[$key];
             }
         }
         return true;
@@ -59,5 +61,10 @@ class Route
             $string = substr($string, 0, -1);
         }
         return explode('/', $string);
+    }
+
+    public function getInputBag(): array
+    {
+        return $this->inputBag;
     }
 }
