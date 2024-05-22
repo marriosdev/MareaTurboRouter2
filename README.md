@@ -41,7 +41,7 @@ class ControllerTeste
         $request->all();
 
         // get only id parameter
-        $request->only(["id"]);
+        echo $request->only(["id"])['id'];
     }
 }
 
