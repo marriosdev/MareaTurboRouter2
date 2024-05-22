@@ -35,9 +35,13 @@ class ControllerTeste
     {}
 
     #[Route("/teste/{id}", "GET", "route.name")]
-    public function teste($parameters)
+    public function teste($request)
     {
-        echo $parameters->id;
+        // get all parameters
+        $request->all();
+
+        // get only id parameter
+        $request->only(["id"]);
     }
 }
 

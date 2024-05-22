@@ -46,7 +46,7 @@ class Route
                 if (substr($value, 0, 1) != "{" || substr($value, -1) != "}") {
                     return false;
                 }
-                $this->inputBag[substr($value, 1, -1)] = $accessedRoute[$key];
+                $this->inputBag[substr($value, 1, -1)] = htmlspecialchars(trim(addslashes($accessedRoute[$key])));
             }
         }
         return true;
