@@ -2,7 +2,7 @@
     "name": "marrios/mareaturborouter",
     "description": "Route manager",
     "keywords": ["Router", "MVC", "Manager"],
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-only",
     "type": "library",
     "autoload": {
         "psr-4": {
