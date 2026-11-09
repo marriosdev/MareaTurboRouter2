@@ -55,3 +55,15 @@ test("dynamic parameters are url-decoded and captured", function () {
 
     expect($route->getInputBag())->toBe(["name" => "joão"]);
 });
+
+test("a method can declare several routes", function () {
+    $method = new ReflectionMethod(new class {
+        #[\MareaTurbo\Route("/a", "PUT")]
+        #[\MareaTurbo\Route("/a", "PATCH")]
+        public function update() {}
+    }, "update");
+
+    $methods = array_map(fn ($a) => $a->newInstance()->method->name, $method->getAttributes(\MareaTurbo\Route::class));
+
+    expect($methods)->toBe(["PUT", "PATCH"]);
+});

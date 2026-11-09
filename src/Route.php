@@ -6,7 +6,7 @@ namespace MareaTurbo;
 
 use Attribute;
 
-#[Attribute]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class Route
 {
     public String $path;
