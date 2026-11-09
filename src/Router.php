@@ -34,23 +34,23 @@ class Router
      */
     private function run(): void
     {
+        $accessedRoute = $this->getAccessedRoute();
         foreach ($this->controllers as $controller) {
             $reflectionController = new ReflectionClass($controller);
             foreach ($reflectionController->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                $this->getRouteAttribute($method, $controller);
+                $this->getRouteAttribute($method, $controller, $accessedRoute);
             }
         }
         http_response_code(404);
     }
 
-    private function getRouteAttribute($method, $controller)
+    private function getRouteAttribute(ReflectionMethod $method, string $controller, Route $accessedRoute)
     {
-        if ($method->getAttributes()) {
-            foreach ($method->getAttributes() as $route) {
-                $routeInstance = $route->newInstance();
-                if ($routeInstance->isMatch($this->getAccessedRoute())) {
-                    return $this->invokeController($method, $controller, $routeInstance);
-                }
+        // only #[Route] attributes; other attributes on the method are ignored
+        foreach ($method->getAttributes(Route::class) as $route) {
+            $routeInstance = $route->newInstance();
+            if ($routeInstance->isMatch($accessedRoute)) {
+                return $this->invokeController($method, $controller, $routeInstance);
             }
         }
     }
@@ -72,15 +72,9 @@ class Router
     private function getAccessedRoute()
     {
         global $argv;
-        $route = $this->isCli() ? $argv[2] : explode("?", $_SERVER['REQUEST_URI'])[0];
-        $method = $this->isCli() ? $argv[1] : explode("?", $_SERVER['REQUEST_METHOD'])[0];
+        $route = $this->isCli() ? ($argv[2] ?? '/') : explode("?", $_SERVER['REQUEST_URI'])[0];
+        $method = $this->isCli() ? ($argv[1] ?? 'GET') : $_SERVER['REQUEST_METHOD'];
         return new Route($route, $method);
-    }
-
-    private function getUri(): string
-    {
-        global $argv;
-        return $this->isCli() ? $argv[2] : explode("?", $_SERVER['REQUEST_URI'])[0];
     }
 
     private function endLifeCycle()
