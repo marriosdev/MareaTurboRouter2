@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace MareaTurbo;
 
-use MareaTurbo\RouteParameters;
 use Attribute;
 
-#[Attribute]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class Route
 {
     public String $path;
     public HttpMethod $method;
     public string $name;
-    protected array $inputBag;
+    protected array $inputBag = [];
 
     /**
      * 
@@ -46,7 +45,7 @@ class Route
                 if (substr($value, 0, 1) != "{" || substr($value, -1) != "}") {
                     return false;
                 }
-                $this->inputBag[substr($value, 1, -1)] = htmlspecialchars(trim(addslashes($accessedRoute[$key])));
+                $this->inputBag[substr($value, 1, -1)] = htmlspecialchars(trim(addslashes(rawurldecode($accessedRoute[$key]))));
             }
         }
         return true;
@@ -57,10 +56,8 @@ class Route
      */
     public function routeStringToArray(string $string): array
     {
-        if (substr($string, -1) == "/") {
-            $string = substr($string, 0, -1);
-        }
-        return explode('/', $string);
+        // "/post/1", "post/1" and "post/1/" are the same route
+        return explode('/', trim($string, '/'));
     }
 
     public function getInputBag(): array

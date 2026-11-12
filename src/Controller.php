@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace MareaTurbo;
 use MareaTurbo\MareaTurboException;
 use ReflectionClass;
-use MareaTurbo\RouteParameters;
 
 class Controller
 {
@@ -64,11 +63,16 @@ class Controller
 
         $arguments = array();
         foreach($dependencies as $dependency){
-            if(class_exists($dependency->getType()->getName())) {
-                $dependencyClassName = $dependency->getType()->getName();
-                $dependencyReflectionClass = new ReflectionClass($dependencyClassName);
-                $arguments[] = $this->recursiveDependenciesBuild($dependencyReflectionClass);
-            }            
+            $type = $dependency->getType();
+            if($type instanceof \ReflectionNamedType && !$type->isBuiltin() && class_exists($type->getName())) {
+                $arguments[] = $this->recursiveDependenciesBuild(new ReflectionClass($type->getName()));
+            } elseif($dependency->isDefaultValueAvailable()) {
+                $arguments[] = $dependency->getDefaultValue();
+            } elseif($dependency->allowsNull()) {
+                $arguments[] = null;
+            } else {
+                throw new MareaTurboException("Cannot resolve dependency \${$dependency->getName()} of {$reflectionControllerInstance->getName()}");
+            }
         }
         return $reflectionControllerInstance->newInstanceArgs($arguments);
     }

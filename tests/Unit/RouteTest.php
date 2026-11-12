@@ -35,3 +35,35 @@ test("must return false when the method is different", function () {
     
     expect($match)->toBeFalse();
 });
+
+test("input bag is empty, not an error, for routes without parameters", function () {
+    $route = new \MareaTurbo\Route("/post", "GET");
+    $route->isMatch(new \MareaTurbo\Route("/post", "GET"));
+
+    expect($route->getInputBag())->toBe([]);
+});
+
+test("leading and trailing slashes do not matter", function () {
+    $route = new \MareaTurbo\Route("/post/{id}", "GET");
+
+    expect($route->isMatch(new \MareaTurbo\Route("post/1/", "GET")))->toBeTrue();
+});
+
+test("dynamic parameters are url-decoded and captured", function () {
+    $route = new \MareaTurbo\Route("/user/{name}", "GET");
+    $route->isMatch(new \MareaTurbo\Route("/user/jo%C3%A3o", "GET"));
+
+    expect($route->getInputBag())->toBe(["name" => "joão"]);
+});
+
+test("a method can declare several routes", function () {
+    $method = new ReflectionMethod(new class {
+        #[\MareaTurbo\Route("/a", "PUT")]
+        #[\MareaTurbo\Route("/a", "PATCH")]
+        public function update() {}
+    }, "update");
+
+    $methods = array_map(fn ($a) => $a->newInstance()->method->name, $method->getAttributes(\MareaTurbo\Route::class));
+
+    expect($methods)->toBe(["PUT", "PATCH"]);
+});
